@@ -24,10 +24,6 @@ jobs:
       - name: Build site Astro
         uses: withastro/action@v4
 
-      - name: Lưu artifact cho Pages
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: ./dist
 
   deploy:
     needs: build
