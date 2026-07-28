@@ -1,10 +1,11 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import pagefind from 'astro-pagefind';
+import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://trungtin87.github.io',
+  site: 'https://OEVIETNAM.github.io',
   base: '/SachViet/',
-  integrations: [pagefind()],
+  integrations: [pagefind(), sitemap()],
 });

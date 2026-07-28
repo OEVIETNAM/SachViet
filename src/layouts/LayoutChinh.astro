@@ -23,6 +23,7 @@ const goc = import.meta.env.BASE_URL; // vd: "/SachViet/" khi deploy lên GitHub
     <link rel="icon" href={`${goc}favicon-32.png`} type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href={`${goc}apple-touch-icon.png`} />
     <link rel="manifest" href={`${goc}manifest.json`} />
+    <link rel="alternate" type="application/rss+xml" title="Sách Việt — sách mới đăng" href={`${goc}rss.xml`} />
     <meta name="theme-color" content="#d6293c" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -39,9 +40,15 @@ const goc = import.meta.env.BASE_URL; // vd: "/SachViet/" khi deploy lên GitHub
           <img src={`${goc}favicon-32.png`} alt="" width="32" height="32" />
           <span>Sách Việt</span>
         </a>
-        <nav>
-          <a href={`${goc}tim-kiem/`}>Tìm sách</a>
-        </nav>
+        <div class="ben-phai">
+          <span class="dong-ho" id="dong-ho-ngay-gio" aria-live="off">
+            <span class="dong-ho-day-du"></span>
+            <span class="dong-ho-gon"></span>
+          </span>
+          <nav>
+            <a href={`${goc}tat-ca/`}>Tất cả sách</a>
+          </nav>
+        </div>
       </div>
     </header>
 
@@ -78,7 +85,35 @@ const goc = import.meta.env.BASE_URL; // vd: "/SachViet/" khi deploy lên GitHub
         font-weight: 800;
         color: var(--do-chinh);
       }
-      .thanh-dieu-huong nav a {
+      .ben-phai {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+      .dong-ho {
+        font-family: var(--font-tieu-de);
+        font-weight: 600;
+        font-size: 0.92rem;
+        color: var(--chu-dam);
+        white-space: nowrap;
+      }
+      .dong-ho-gon {
+        display: none;
+      }
+      @media (max-width: 640px) {
+        .dong-ho-day-du {
+          display: none;
+        }
+        .dong-ho-gon {
+          display: inline;
+        }
+        .ben-phai {
+          gap: 10px;
+        }
+        .logo span {
+          display: none;
+        }
+      }
         font-family: var(--font-tieu-de);
         font-weight: 600;
         padding: 8px 18px;
@@ -100,5 +135,65 @@ const goc = import.meta.env.BASE_URL; // vd: "/SachViet/" khi deploy lên GitHub
         border-top: 3px solid var(--chu-dam);
       }
     </style>
+
+    <script>
+      // Đồng hồ ngày giờ theo múi giờ Việt Nam, tự cập nhật mỗi phút
+      const TEN_THU_THEO_TIENG_ANH: Record<string, string> = {
+        Sunday: 'Chủ Nhật',
+        Monday: 'Thứ 2',
+        Tuesday: 'Thứ 3',
+        Wednesday: 'Thứ 4',
+        Thursday: 'Thứ 5',
+        Friday: 'Thứ 6',
+        Saturday: 'Thứ 7',
+      };
+
+      function layBuoiTrongNgay(gio: number): string {
+        if (gio < 5) return 'Đêm';
+        if (gio < 11) return 'Sáng';
+        if (gio < 13) return 'Trưa';
+        if (gio < 18) return 'Chiều';
+        return 'Tối';
+      }
+
+      function capNhatDongHo() {
+        const bay_gio = new Date();
+
+        const dinh_dang_so = new Intl.DateTimeFormat('en-US', {
+          timeZone: 'Asia/Ho_Chi_Minh',
+          hourCycle: 'h23',
+          hour: 'numeric',
+          minute: '2-digit',
+          day: 'numeric',
+          month: 'numeric',
+          year: 'numeric',
+        });
+        const cac_phan = Object.fromEntries(dinh_dang_so.formatToParts(bay_gio).map((p) => [p.type, p.value]));
+
+        const dinh_dang_thu = new Intl.DateTimeFormat('en-US', {
+          timeZone: 'Asia/Ho_Chi_Minh',
+          weekday: 'long',
+        });
+        const ten_thu = TEN_THU_THEO_TIENG_ANH[dinh_dang_thu.format(bay_gio)] ?? '';
+
+        const gio = Number(cac_phan.hour);
+        const phut = cac_phan.minute;
+        const ngay = cac_phan.day;
+        const thang = cac_phan.month;
+        const nam = cac_phan.year;
+        const buoi = layBuoiTrongNgay(gio);
+
+        const chuoi_day_du = `${buoi} ${gio}:${phut} ${ten_thu} ngày ${ngay}/${thang}/${nam}`;
+        const chuoi_gon = `${gio}:${phut} ${ngay}/${thang}`;
+
+        const the_day_du = document.querySelector('.dong-ho-day-du');
+        const the_gon = document.querySelector('.dong-ho-gon');
+        if (the_day_du) the_day_du.textContent = chuoi_day_du;
+        if (the_gon) the_gon.textContent = chuoi_gon;
+      }
+
+      capNhatDongHo();
+      setInterval(capNhatDongHo, 30_000);
+    </script>
   </body>
 </html>
