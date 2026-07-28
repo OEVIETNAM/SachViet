@@ -1,0 +1,106 @@
+/* ============================================
+   TOKEN THIẾT KẾ — Sách Việt
+   Bảng màu lấy cảm hứng từ logo (đỏ - vàng kim),
+   thêm ngọc bích làm nhấn mát để giữ cảm giác tươi trẻ.
+   ============================================ */
+:root {
+  --do-chinh: #d6293c;
+  --do-dam: #a01f2d;
+  --vang-kim: #f0b429;
+  --vang-nhat: #ffd873;
+  --ngoc-bich: #0e8c7f;
+  --ngoc-bich-nhat: #e3f5f2;
+  --nen-kem: #fff8ec;
+  --nen-kem-dam: #fbeed9;
+  --chu-dam: #2a1810;
+  --chu-nhat: #6b5a4f;
+  --trang: #ffffff;
+
+  --bo-goc-nho: 12px;
+  --bo-goc-vua: 20px;
+  --bo-goc-lon: 32px;
+
+  --do-bong-nhe: 0 2px 8px rgba(42, 24, 16, 0.08);
+  --do-bong-vua: 0 8px 24px rgba(42, 24, 16, 0.14);
+  --do-bong-hover: 0 16px 32px rgba(214, 41, 60, 0.18);
+
+  --font-tieu-de: 'Baloo 2', 'Be Vietnam Pro', sans-serif;
+  --font-noi-dung: 'Be Vietnam Pro', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--nen-kem);
+  color: var(--chu-dam);
+  font-family: var(--font-noi-dung);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-image:
+    radial-gradient(circle at 8% 12%, var(--vang-nhat) 0%, transparent 2.5%),
+    radial-gradient(circle at 22% 70%, var(--vang-nhat) 0%, transparent 2%),
+    radial-gradient(circle at 85% 18%, var(--vang-nhat) 0%, transparent 2%),
+    radial-gradient(circle at 92% 60%, var(--vang-nhat) 0%, transparent 1.8%);
+  background-attachment: fixed;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-tieu-de);
+  font-weight: 700;
+  color: var(--chu-dam);
+  line-height: 1.15;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.khung-trang {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.nhan-tuoi {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-tieu-de);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--trang);
+  background: var(--ngoc-bich);
+  border: 2px dashed rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  text-align: center;
+  transform: rotate(-9deg);
+  box-shadow: var(--do-bong-nhe);
+}
+
+:focus-visible {
+  outline: 3px solid var(--do-chinh);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

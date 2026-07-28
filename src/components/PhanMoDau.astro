@@ -1,0 +1,83 @@
+---
+const goc = import.meta.env.BASE_URL;
+---
+<section class="mo-dau">
+  <div class="khung-trang noi-dung-mo-dau">
+    <span class="ngoi-sao" aria-hidden="true">★</span>
+    <h1>
+      Kho truyện dịch tiếng Việt,<br />
+      cho mọi lứa tuổi
+    </h1>
+    <p>Chọn một cuốn, cuộn qua các kệ theo độ tuổi và thể loại, hoặc bấm tìm để đi thẳng tới trang bạn muốn.</p>
+    <form action={`${goc}tim-kiem/`} class="o-tim-nhanh">
+      <input type="text" name="q" placeholder="Tìm theo tên sách, tác giả..." aria-label="Tìm sách" />
+      <button type="submit">Tìm</button>
+    </form>
+  </div>
+</section>
+
+<style>
+  .mo-dau {
+    padding-block: 56px 24px;
+    text-align: center;
+    position: relative;
+  }
+  .noi-dung-mo-dau {
+    max-width: 720px;
+  }
+  .ngoi-sao {
+    display: inline-block;
+    font-size: 2.4rem;
+    color: var(--vang-kim);
+    text-shadow: 0 0 18px rgba(240, 180, 41, 0.6);
+    animation: lap-lanh 2.4s ease-in-out infinite;
+    margin-bottom: 8px;
+  }
+  @keyframes lap-lanh {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    50% { transform: scale(1.12) rotate(8deg); opacity: 0.85; }
+  }
+  h1 {
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    color: var(--do-chinh);
+  }
+  .mo-dau p {
+    margin: 18px auto 0;
+    color: var(--chu-nhat);
+    font-size: 1.05rem;
+    max-width: 520px;
+  }
+  .o-tim-nhanh {
+    margin: 28px auto 0;
+    display: flex;
+    max-width: 460px;
+    background: var(--trang);
+    border: 3px solid var(--chu-dam);
+    border-radius: 999px;
+    padding: 6px 6px 6px 20px;
+    box-shadow: var(--do-bong-vua);
+  }
+  .o-tim-nhanh input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: var(--font-noi-dung);
+    font-size: 1rem;
+    outline: none;
+    color: var(--chu-dam);
+  }
+  .o-tim-nhanh button {
+    font-family: var(--font-tieu-de);
+    font-weight: 700;
+    background: var(--do-chinh);
+    color: var(--trang);
+    border: none;
+    border-radius: 999px;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  .o-tim-nhanh button:hover {
+    transform: scale(1.05);
+  }
+</style>

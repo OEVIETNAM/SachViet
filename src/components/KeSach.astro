@@ -1,0 +1,80 @@
+---
+import TheSach from './TheSach.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface MucSach {
+  sach: CollectionEntry<'sach'>;
+  duong_dan_doc: string;
+}
+
+interface Props {
+  tieu_de_ke: string;
+  danh_sach_sach: MucSach[];
+  xao_tron?: boolean;
+}
+
+const { tieu_de_ke, danh_sach_sach, xao_tron = true } = Astro.props;
+---
+
+<section class="ke-sach">
+  <h2 class="tieu-de-ke">{tieu_de_ke}</h2>
+  <div class="hang-sach" data-xao-tron={xao_tron ? 'true' : 'false'}>
+    {
+      danh_sach_sach.map(({ sach, duong_dan_doc }) => (
+        <TheSach
+          duong_dan_doc={duong_dan_doc}
+          tieu_de={sach.data.tieu_de}
+          tac_gia={sach.data.tac_gia}
+          mo_ta={sach.data.mo_ta}
+          bia={sach.data.bia}
+          nhom_tuoi={sach.data.nhom_tuoi}
+        />
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .ke-sach {
+    margin-block: 48px;
+  }
+  .tieu-de-ke {
+    font-size: 1.5rem;
+    margin-bottom: 18px;
+    padding-left: 14px;
+    border-left: 8px solid var(--vang-kim);
+  }
+  .hang-sach {
+    display: flex;
+    gap: 22px;
+    overflow-x: auto;
+    padding: 8px 4px 24px;
+    scroll-snap-type: x proximity;
+  }
+  .hang-sach > :global(a) {
+    scroll-snap-align: start;
+  }
+  .hang-sach::-webkit-scrollbar {
+    height: 8px;
+  }
+  .hang-sach::-webkit-scrollbar-thumb {
+    background: var(--vang-kim);
+    border-radius: 999px;
+  }
+</style>
+
+<script>
+  // Xáo trộn thứ tự sách mỗi lần người dùng mở trang, để kệ sách không lặp lại y hệt.
+  function xaoTronMang<T>(mang: T[]): T[] {
+    for (let i = mang.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [mang[i], mang[j]] = [mang[j], mang[i]];
+    }
+    return mang;
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-xao-tron="true"]').forEach((hang) => {
+    const cac_the = xaoTronMang(Array.from(hang.children));
+    cac_the.forEach((the) => hang.appendChild(the));
+  });
+</script>

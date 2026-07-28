@@ -1,0 +1,67 @@
+---
+import { getCollection } from 'astro:content';
+import LayoutChinh from '../layouts/LayoutChinh.astro';
+import PhanMoDau from '../components/PhanMoDau.astro';
+import KeSach from '../components/KeSach.astro';
+
+const goc = import.meta.env.BASE_URL;
+
+const tat_ca_sach = await getCollection('sach');
+const tat_ca_chuong = await getCollection('chuong');
+
+// Với mỗi sách, tìm chương có thu_tu nhỏ nhất để làm điểm bắt đầu đọc
+function duong_dan_doc_dau_tien(ma_sach: string): string {
+  const cac_chuong_cua_sach = tat_ca_chuong
+    .filter((c) => c.id.startsWith(`${ma_sach}/`))
+    .sort((a, b) => a.data.thu_tu - b.data.thu_tu);
+  const chuong_dau = cac_chuong_cua_sach[0];
+  return chuong_dau ? `${goc}doc/${chuong_dau.id}/` : '#';
+}
+
+const sach_kem_link = tat_ca_sach
+  .map((sach) => ({ sach, duong_dan_doc: duong_dan_doc_dau_tien(sach.id) }))
+  .sort((a, b) => b.sach.data.ngay_dang.getTime() - a.sach.data.ngay_dang.getTime());
+
+const thu_tu_nhom_tuoi = [
+  { khoa: 'thieu-nhi', ten: '🧸 Thiếu nhi' },
+  { khoa: 'thieu-nien', ten: '🧭 Thiếu niên' },
+  { khoa: 'tuoi-teen', ten: '🎧 Tuổi teen' },
+  { khoa: 'nguoi-lon', ten: '📖 Người lớn' },
+];
+
+const ke_theo_nhom_tuoi = thu_tu_nhom_tuoi
+  .map((nhom) => ({
+    ten: nhom.ten,
+    sach: sach_kem_link.filter((m) => m.sach.data.nhom_tuoi === nhom.khoa),
+  }))
+  .filter((nhom) => nhom.sach.length > 0);
+
+const sach_noi_bat = sach_kem_link.filter((m) => m.sach.data.noi_bat);
+---
+
+<LayoutChinh tieu_de="Trang chủ" mo_ta="Thư viện truyện dịch tiếng Việt cho mọi lứa tuổi, phân loại theo độ tuổi và thể loại.">
+  <PhanMoDau />
+
+  <div class="khung-trang">
+    {sach_noi_bat.length > 0 && <KeSach tieu_de_ke="✨ Mới & nổi bật" danh_sach_sach={sach_noi_bat} />}
+
+    {ke_theo_nhom_tuoi.map((nhom) => <KeSach tieu_de_ke={nhom.ten} danh_sach_sach={nhom.sach} />)}
+
+    {
+      tat_ca_sach.length === 0 && (
+        <p class="rong">
+          Chưa có sách nào. Thêm file <code>.md</code> vào <code>src/content/sach/</code> và các chương vào{' '}
+          <code>src/content/chuong/</code> để bắt đầu.
+        </p>
+      )
+    }
+  </div>
+
+  <style>
+    .rong {
+      text-align: center;
+      color: var(--chu-nhat);
+      padding: 40px 0;
+    }
+  </style>
+</LayoutChinh>

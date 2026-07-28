@@ -1,0 +1,54 @@
+---
+import LayoutChinh from '../layouts/LayoutChinh.astro';
+import Pagefind from 'astro-pagefind/components/Search.astro';
+---
+
+<LayoutChinh tieu_de="Tìm sách" mo_ta="Tìm kiếm sách theo tên, tác giả hoặc nội dung.">
+  <div class="khung-trang trang-tim-kiem">
+    <h1>Tìm sách</h1>
+    <p class="ghi-chu">Gõ tên sách, tên tác giả, hoặc một từ khoá trong nội dung.</p>
+    <Pagefind
+      id="tim-kiem-chinh"
+      class="hop-tim-kiem"
+      uiOptions={{
+        showSubResults: true,
+        showImages: true,
+        excerptLength: 20,
+      }}
+    />
+  </div>
+
+  <style>
+    .trang-tim-kiem {
+      padding-block: 40px 80px;
+      max-width: 720px;
+    }
+    h1 {
+      color: var(--do-chinh);
+      font-size: 2rem;
+    }
+    .ghi-chu {
+      color: var(--chu-nhat);
+      margin-top: 8px;
+    }
+    .hop-tim-kiem {
+      margin-top: 28px;
+    }
+    /* Tuỳ biến giao diện mặc định của Pagefind cho hợp bảng màu */
+    .hop-tim-kiem :global(.pagefind-ui__search-input) {
+      font-family: var(--font-noi-dung);
+      border: 3px solid var(--chu-dam);
+      border-radius: 999px;
+      padding: 12px 20px;
+    }
+    .hop-tim-kiem :global(.pagefind-ui__result-link) {
+      color: var(--do-chinh);
+      font-family: var(--font-tieu-de);
+    }
+    .hop-tim-kiem :global(.pagefind-ui__button) {
+      background: var(--do-chinh);
+      border-radius: 999px;
+      font-family: var(--font-tieu-de);
+    }
+  </style>
+</LayoutChinh>

@@ -1,0 +1,147 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  duong_dan_doc: string;
+  tieu_de: string;
+  tac_gia: string;
+  mo_ta: string;
+  bia?: ImageMetadata;
+  nhom_tuoi: string;
+}
+
+const { duong_dan_doc, tieu_de, tac_gia, mo_ta, bia, nhom_tuoi } = Astro.props;
+
+const nhan_theo_nhom: Record<string, string> = {
+  'thieu-nhi': 'Thiếu nhi',
+  'thieu-nien': 'Thiếu niên',
+  'tuoi-teen': 'Tuổi teen',
+  'nguoi-lon': 'Người lớn',
+};
+---
+
+<a href={duong_dan_doc} class="the-sach">
+  <div class="bia-sach">
+    {
+      bia ? (
+        <Image src={bia} alt={`Bìa sách ${tieu_de}`} width={240} height={340} />
+      ) : (
+        <div class="bia-trong">{tieu_de.charAt(0)}</div>
+      )
+    }
+    <span class="nhan-tuoi">{nhan_theo_nhom[nhom_tuoi] ?? nhom_tuoi}</span>
+
+    <div class="lop-phu-hover">
+      <p class="mo-ta-hover">{mo_ta}</p>
+      <span class="nut-doc-hover">Đọc ngay →</span>
+    </div>
+  </div>
+  <h3 class="ten-sach">{tieu_de}</h3>
+  <p class="ten-tac-gia">{tac_gia}</p>
+</a>
+
+<style>
+  .the-sach {
+    display: inline-block;
+    width: 190px;
+    flex: 0 0 auto;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .the-sach:hover {
+    transform: translateY(-10px) rotate(-1.5deg);
+  }
+  .bia-sach {
+    position: relative;
+    aspect-ratio: 3 / 4.2;
+    border-radius: var(--bo-goc-nho);
+    overflow: hidden;
+    box-shadow: var(--do-bong-vua);
+    background: var(--trang);
+    border: 3px solid var(--chu-dam);
+  }
+  .the-sach:hover .bia-sach {
+    box-shadow: var(--do-bong-hover);
+  }
+  .bia-sach :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .bia-trong {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-tieu-de);
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--trang);
+    background: linear-gradient(135deg, var(--do-chinh), var(--do-dam));
+  }
+  .nhan-tuoi {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 46px;
+    height: 46px;
+    font-size: 0.62rem;
+  }
+
+  /* Lớp phủ mô tả sách, hiện khi rê chuột vào bìa */
+  .lop-phu-hover {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 14px;
+    background: linear-gradient(180deg, rgba(42, 24, 16, 0) 35%, rgba(42, 24, 16, 0.92) 100%);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .the-sach:hover .lop-phu-hover,
+  .the-sach:focus-visible .lop-phu-hover {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .mo-ta-hover {
+    margin: 0;
+    color: var(--trang);
+    font-size: 0.78rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .nut-doc-hover {
+    align-self: flex-start;
+    font-family: var(--font-tieu-de);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--chu-dam);
+    background: var(--vang-kim);
+    padding: 4px 12px;
+    border-radius: 999px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lop-phu-hover {
+      transition: none;
+    }
+  }
+
+  .ten-sach {
+    margin-top: 12px;
+    font-size: 1rem;
+    font-family: var(--font-tieu-de);
+    line-height: 1.25;
+  }
+  .ten-tac-gia {
+    margin: 2px 0 0;
+    font-size: 0.8rem;
+    color: var(--chu-nhat);
+  }
+</style>

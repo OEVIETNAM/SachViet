@@ -1,0 +1,218 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import LayoutChinh from '../../layouts/LayoutChinh.astro';
+import { layTrinhBayMacDinh, gopTrinhBay, taoBienCssTrinhBay } from '../../lib/trinh-bay';
+
+export async function getStaticPaths() {
+  const tat_ca_chuong = await getCollection('chuong');
+  return tat_ca_chuong.map((chuong) => ({
+    params: { id: chuong.id },
+    props: { chuong },
+  }));
+}
+
+const { chuong } = Astro.props;
+const goc = import.meta.env.BASE_URL;
+
+const ma_sach = chuong.id.split('/')[0];
+const sach = await getEntry('sach', ma_sach);
+
+// Cấu hình trình bày: lấy mặc định theo nhóm tuổi, rồi gộp với file tùy chỉnh riêng của sách (nếu có)
+const tat_ca_trinh_bay = await getCollection('trinh-bay');
+const trinh_bay_tuy_chinh = tat_ca_trinh_bay.find((t) => t.id === ma_sach);
+const trinh_bay = gopTrinhBay(layTrinhBayMacDinh(sach?.data.nhom_tuoi ?? 'tuoi-teen'), trinh_bay_tuy_chinh?.data);
+const bien_css_trinh_bay = taoBienCssTrinhBay(trinh_bay);
+
+const cac_chuong_cua_sach = (await getCollection('chuong', (c) => c.id.startsWith(`${ma_sach}/`))).sort(
+  (a, b) => a.data.thu_tu - b.data.thu_tu
+);
+
+const vi_tri_hien_tai = cac_chuong_cua_sach.findIndex((c) => c.id === chuong.id);
+const chuong_truoc = vi_tri_hien_tai > 0 ? cac_chuong_cua_sach[vi_tri_hien_tai - 1] : null;
+const chuong_sau = vi_tri_hien_tai < cac_chuong_cua_sach.length - 1 ? cac_chuong_cua_sach[vi_tri_hien_tai + 1] : null;
+
+const { Content } = await render(chuong);
+---
+
+<LayoutChinh
+  tieu_de={sach ? `${chuong.data.tieu_de_chuong} · ${sach.data.tieu_de}` : chuong.data.tieu_de_chuong}
+  mo_ta={sach?.data.mo_ta}
+>
+  <article
+    class:list={['khung-trang', 'trang-doc', trinh_bay.hoa_tiet_nen && 'co-hoa-tiet']}
+    style={bien_css_trinh_bay}
+    data-pagefind-body
+  >
+    <a href={goc} class="quay-lai">← Về trang chủ</a>
+
+    <header class="dau-trang-doc">
+      <p class="ten-sach-nho">{sach?.data.tieu_de}</p>
+      <h1>{chuong.data.tieu_de_chuong}</h1>
+    </header>
+
+    {
+      cac_chuong_cua_sach.length > 1 && (
+        <details class="muc-luc">
+          <summary>📑 Mục lục ({cac_chuong_cua_sach.length} chương)</summary>
+          <ol>
+            {cac_chuong_cua_sach.map((c) => (
+              <li class={c.id === chuong.id ? 'dang-doc' : ''}>
+                <a href={`${goc}doc/${c.id}/`}>{c.data.tieu_de_chuong}</a>
+              </li>
+            ))}
+          </ol>
+        </details>
+      )
+    }
+
+    <div class="noi-dung-chuong">
+      <Content />
+    </div>
+
+    <nav class="dieu-huong-chuong" aria-label="Điều hướng chương">
+      {
+        chuong_truoc ? (
+          <a href={`${goc}doc/${chuong_truoc.id}/`} class="nut-chuong nut-truoc">
+            <span class="nhan-nut">← Chương trước</span>
+            <span class="ten-chuong-nut">{chuong_truoc.data.tieu_de_chuong}</span>
+          </a>
+        ) : (
+          <span class="nut-chuong nut-vo-hieu" aria-hidden="true" />
+        )
+      }
+      {
+        chuong_sau ? (
+          <a href={`${goc}doc/${chuong_sau.id}/`} class="nut-chuong nut-sau">
+            <span class="nhan-nut">Chương kế →</span>
+            <span class="ten-chuong-nut">{chuong_sau.data.tieu_de_chuong}</span>
+          </a>
+        ) : (
+          <span class="nut-chuong nut-vo-hieu" aria-hidden="true" />
+        )
+      }
+    </nav>
+  </article>
+
+  <style>
+    .trang-doc {
+      max-width: var(--rong-doc, 720px);
+      padding-block: 32px 64px;
+      background: var(--nen-doc, var(--nen-kem));
+      color: var(--chu-doc, var(--chu-dam));
+      border-radius: var(--bo-goc-doc, 0);
+    }
+    /* Hoạ tiết nền dạng chấm sáng — chỉ bật cho sách có hoa_tiet_nen: true (thường là sách thiếu nhi/thiếu niên) */
+    .trang-doc.co-hoa-tiet {
+      background-image:
+        radial-gradient(circle at 6% 10%, var(--nhan-doc, var(--vang-kim)) 0%, transparent 3%),
+        radial-gradient(circle at 92% 14%, var(--nhan-doc, var(--vang-kim)) 0%, transparent 2.4%),
+        radial-gradient(circle at 88% 82%, var(--nhan-doc, var(--vang-kim)) 0%, transparent 2.4%);
+      background-attachment: fixed;
+    }
+    .quay-lai {
+      display: inline-block;
+      margin-bottom: 20px;
+      font-family: var(--font-tieu-de);
+      font-weight: 600;
+      color: var(--do-chinh);
+    }
+    .dau-trang-doc {
+      border-bottom: 3px dashed var(--vang-kim);
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+    }
+    .ten-sach-nho {
+      margin: 0 0 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--nhan-doc, var(--ngoc-bich));
+    }
+    .dau-trang-doc h1 {
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      color: var(--do-chinh);
+    }
+
+    /* Mục lục dùng <details> để ẩn mặc định, không cần JS */
+    .muc-luc {
+      background: var(--trang);
+      border: 2px solid var(--chu-doc, var(--chu-dam));
+      border-radius: var(--bo-goc-doc, var(--bo-goc-nho));
+      padding: 6px 16px;
+      margin-bottom: 28px;
+    }
+    .muc-luc summary {
+      cursor: pointer;
+      font-family: var(--font-tieu-de);
+      font-weight: 700;
+      padding-block: 10px;
+      color: var(--do-chinh);
+    }
+    .muc-luc ol {
+      margin: 0;
+      padding: 4px 0 14px 20px;
+    }
+    .muc-luc li {
+      margin-block: 4px;
+    }
+    .muc-luc li a {
+      color: var(--chu-doc, var(--chu-dam));
+    }
+    .muc-luc li a:hover {
+      color: var(--do-chinh);
+    }
+    .muc-luc li.dang-doc a {
+      color: var(--do-chinh);
+      font-weight: 700;
+    }
+
+    .noi-dung-chuong {
+      font-family: var(--font-doc, var(--font-noi-dung));
+      font-size: var(--co-chu-doc, 1.08rem);
+      line-height: var(--dong-doc, 1.85);
+    }
+    .noi-dung-chuong :global(h2) {
+      color: var(--do-chinh);
+      margin-top: 36px;
+    }
+
+    .dieu-huong-chuong {
+      display: flex;
+      gap: 16px;
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 3px solid var(--chu-doc, var(--chu-dam));
+    }
+    .nut-chuong {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 14px 18px;
+      background: var(--trang);
+      border: 2px solid var(--chu-doc, var(--chu-dam));
+      border-radius: var(--bo-goc-doc, var(--bo-goc-nho));
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .nut-chuong:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--do-bong-vua);
+    }
+    .nut-sau {
+      text-align: right;
+    }
+    .nhan-nut {
+      font-family: var(--font-tieu-de);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--nhan-doc, var(--ngoc-bich));
+    }
+    .ten-chuong-nut {
+      font-size: 0.92rem;
+      color: var(--chu-doc, var(--chu-dam));
+    }
+    .nut-vo-hieu {
+      flex: 1;
+      visibility: hidden;
+    }
+  </style>
+</LayoutChinh>

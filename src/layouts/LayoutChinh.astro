@@ -1,0 +1,104 @@
+---
+import '../styles/toan-cuc.css';
+
+interface Props {
+  tieu_de: string;
+  mo_ta?: string;
+}
+
+const { tieu_de, mo_ta = 'Thư viện sách tiếng Việt cho mọi lứa tuổi.' } = Astro.props;
+const goc = import.meta.env.BASE_URL; // vd: "/SachViet/" khi deploy lên GitHub Pages
+---
+
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={mo_ta} />
+    <title>{tieu_de} · Sách Việt</title>
+
+    <link rel="icon" href={`${goc}favicon.ico`} sizes="32x32" />
+    <link rel="icon" href={`${goc}favicon-16.png`} type="image/png" sizes="16x16" />
+    <link rel="icon" href={`${goc}favicon-32.png`} type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href={`${goc}apple-touch-icon.png`} />
+    <link rel="manifest" href={`${goc}manifest.json`} />
+    <meta name="theme-color" content="#d6293c" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="dau-trang">
+      <div class="khung-trang thanh-dieu-huong">
+        <a href={goc} class="logo">
+          <img src={`${goc}favicon-32.png`} alt="" width="32" height="32" />
+          <span>Sách Việt</span>
+        </a>
+        <nav>
+          <a href={`${goc}tim-kiem/`}>Tìm sách</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="chan-trang">
+      <div class="khung-trang">
+        <p>Sách Việt — thư viện truyện dịch tiếng Việt, làm bằng ❤️ cho mọi lứa tuổi.</p>
+      </div>
+    </footer>
+
+    <style>
+      .dau-trang {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: var(--nen-kem);
+        border-bottom: 3px solid var(--chu-dam);
+      }
+      .thanh-dieu-huong {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-block: 14px;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--font-tieu-de);
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--do-chinh);
+      }
+      .thanh-dieu-huong nav a {
+        font-family: var(--font-tieu-de);
+        font-weight: 600;
+        padding: 8px 18px;
+        background: var(--do-chinh);
+        color: var(--trang);
+        border-radius: 999px;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .thanh-dieu-huong nav a:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--do-bong-hover);
+      }
+      .chan-trang {
+        margin-top: 80px;
+        padding-block: 28px;
+        text-align: center;
+        color: var(--chu-nhat);
+        font-size: 0.9rem;
+        border-top: 3px solid var(--chu-dam);
+      }
+    </style>
+  </body>
+</html>
