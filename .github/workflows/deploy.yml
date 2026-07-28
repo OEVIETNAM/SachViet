@@ -23,6 +23,8 @@ jobs:
 
       - name: Build site Astro
         uses: withastro/action@v3
+        with:
+          node-version: 22 # <-- Bổ sung
 
       - name: Lưu artifact cho Pages
         uses: actions/upload-pages-artifact@v3
